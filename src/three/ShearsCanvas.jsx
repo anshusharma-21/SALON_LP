@@ -144,7 +144,7 @@ export default function ShearsCanvas() {
     const check = () => {
       const { a, b } = shears;
       const now = performance.now();
-      if (a.o * a.in > 0.001 || b.o * b.in > 0.001) lastLive = now;
+      if (a.o > 0.001 || b.o * b.in > 0.001) lastLive = now;
       const want = now - lastLive < 1500 ? 'always' : 'never';
       if (want !== cur) { cur = want; setLoop(want); }
     };

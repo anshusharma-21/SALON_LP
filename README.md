@@ -54,5 +54,8 @@ npm run build      # static output in dist/
 - No WebGL: the page works fully, just without the 3D shears.
 - Keyboard: skip link, visible focus, an accordion with `aria-expanded`, and a form with linked error messages.
 
-## Photography
-All 46 photos in `public/images/` are real photographs from Unsplash (free under the Unsplash Licence: commercial use allowed, no attribution required). Each image is used exactly once on the page. Before launch, swap in the salon's own photography wherever possible.
+## Photography & film
+- All photos in `public/images/` are real photographs from Unsplash (free under the Unsplash Licence: commercial use allowed, no attribution required). Each image is used exactly once on the page.
+- `public/video/salon-loop.mp4` is a 20 s seamless loop cut from four Pexels clips (free under the Pexels Licence). It is built in Blender's video editor (no ffmpeg needed). The poster is `salon-loop-poster.webp`.
+- `public/images/loader/shear-a.webp` and `shear-b.webp` are studio renders of the 3D shears, made by `scripts/blender_loader_shears.py`.
+- Before launch, swap in the salon's own photography and film wherever possible.

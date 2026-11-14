@@ -109,10 +109,10 @@ export const lookbook = {
   heading: ['Your work,', 'beautifully shown.'],
   note: 'Example gallery · Illustrative imagery',
   tiles: [
-    ['lb-blowdry.webp', 'Blow-dry'], ['lb-twists.webp', 'Twists'], ['lb-balayage.webp', 'Balayage'],
-    ['lb-curls.webp', 'Curls'], ['lb-copper.webp', 'Colour'], ['lb-natural.webp', 'Natural hair'],
-    ['lb-styling.webp', 'Styling'], ['lb-studio.webp', 'The studio'], ['lb-texture.webp', 'Texture'],
-    ['lb-lengths.webp', 'Lengths'], ['lb-lounge.webp', 'Welcome'], ['lb-details.webp', 'The details'],
+    ['lb-cut.webp', 'Precision cut'], ['lb-colour.webp', 'Colour'], ['lb-blowdry.webp', 'Blow-dry'],
+    ['lb-bridal.webp', 'Bridal'], ['lb-balayage.webp', 'Balayage'], ['lb-extensions.webp', 'Extensions'],
+    ['lb-ritual.webp', 'Hair rituals'], ['lb-updo.webp', 'Up-dos'], ['lb-natural.webp', 'Natural hair'],
+    ['lb-manicure.webp', 'Manicure'], ['lb-studio.webp', 'The studio'], ['lb-facial.webp', 'Facials'],
   ],
 };
 

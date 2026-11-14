@@ -235,7 +235,7 @@ export default function Review() {
     <section className="section closing" id="review" ref={root} aria-labelledby="closing-title">
       <div className="closing-grid">
         <div className="closing-left">
-          <div className="bg" aria-hidden="true"><img src={img('review-bg.webp')} alt="" loading="lazy" /></div>
+          <div className="bg" aria-hidden="true"><img src={img('review-salon.webp')} alt="" loading="lazy" /></div>
           <div>
             <SecLabel n="09">{closing.label}</SecLabel>
             <h2 className="serif d-m" id="closing-title" style={{ margin: 0 }}><Lines lines={closing.heading} /></h2>

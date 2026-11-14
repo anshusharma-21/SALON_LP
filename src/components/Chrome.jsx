@@ -16,12 +16,16 @@ export function Header() {
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState('');
+  // ivory nav while it sits over the hero film (desktop only — on phones the hero is ivory)
+  const filmUnder = () => window.scrollY < window.innerHeight * 0.5 && !window.matchMedia('(max-width: 900px), (prefers-reduced-motion: reduce)').matches;
+  const [onDark, setOnDark] = useState(filmUnder);
 
   useEffect(() => {
     let last = 0;
     const onScroll = () => {
       const y = window.scrollY;
       setScrolled(y > 40);
+      setOnDark(filmUnder());
       setHidden(y > 400 && y > last + 4 && !open);
       if (y < last - 4) setHidden(false);
       last = y;
@@ -53,7 +57,7 @@ export function Header() {
 
   return (
     <>
-      <header className={`header ${scrolled ? 'scrolled' : ''} ${hidden ? 'hidden' : ''}`}>
+      <header className={`header ${scrolled ? 'scrolled' : ''} ${hidden ? 'hidden' : ''} ${onDark ? 'on-dark' : ''}`}>
         <nav className="nav" aria-label="Page sections">
           {nav.map((n) => (
             <a key={n.id} href={`#${n.id}`} className={active === n.id ? 'active' : ''} onClick={(e) => go(e, n.id)}>{n.label}</a>
@@ -61,7 +65,7 @@ export function Header() {
         </nav>
         <div className="header-cta">
           <a href="#review" className="btn solid" onClick={(e) => goTo(e, 'review', cta.primary, 'header')}>
-            <span className="hide-sm">Request a&nbsp;</span>Review<span className="arrow" aria-hidden="true">→</span>
+            <span className="hide-sm">Request a review</span><span className="show-sm">Review</span><span className="arrow" aria-hidden="true">→</span>
           </a>
           <button className="menu-btn" aria-expanded={open} aria-controls="mobile-menu" aria-label={open ? 'Close menu' : 'Open menu'} onClick={() => setOpen((o) => !o)}>
             <i /><i />

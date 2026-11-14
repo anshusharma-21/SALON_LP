@@ -34,8 +34,8 @@ export default function App() {
   useEffect(() => {
     if (!loaded) return;
     resumeScroll();
-    // measure after the loader doors have finished opening (avoids a heavy frame mid-animation)
-    const id = setTimeout(() => { ScrollTrigger.sort(); ScrollTrigger.refresh(); }, 1700);
+    // the loader measures the page while it is still covered; reduced motion has no loader, so measure now
+    const id = reducedMotion() ? setTimeout(() => { ScrollTrigger.sort(); ScrollTrigger.refresh(); }, 50) : 0;
     // Section-view analytics (PRD 11.1) — once per section.
     const seen = new Set();
     const io = new IntersectionObserver((es) => es.forEach((e) => {

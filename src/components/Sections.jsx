@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { gsap, useGSAP, reducedMotion } from '../lib/motion.js';
 import { img } from '../lib/asset.js';
-import { beyond, why, process, faqs, cta } from '../content.js';
+import { beyond, why, process, faqs, cta, site } from '../content.js';
 import { SecHead, SecLabel, Lines } from './common.jsx';
 import { goTo } from './Chrome.jsx';
 import { track } from '../lib/track.js';
@@ -168,7 +168,7 @@ export function Why() {
   return (
     <section className="section why" ref={root} aria-labelledby="why-title" style={{ paddingBottom: 0 }}>
       <div className="wrap why-grid">
-        <div className="why-img"><img src={img('why-curls.webp')} alt="Salon client with defined natural curls and a soft glow" loading="lazy" /></div>
+        <div className="why-img"><img src={img('why-salon.webp')} alt="Stylist curling a client's hair in the salon" loading="lazy" /></div>
         <div>
           <SecLabel n="06">{why.label}</SecLabel>
           <h2 className="serif d-s" id="why-title" style={{ margin: '0 0 34px' }}><Lines lines={why.heading} /></h2>
@@ -193,14 +193,25 @@ export function Why() {
 export function Process() {
   const root = useRef();
   useGSAP(() => {
+    if (reducedMotion()) return;
     const q = gsap.utils.selector(root);
-    if (reducedMotion()) { q('.proc-step').forEach((s) => s.classList.add('on')); return; }
-    gsap.to(q('.proc-line i'), { scaleY: 1, ease: 'none', scrollTrigger: { trigger: q('.proc-list')[0], start: 'top 60%', end: 'bottom 60%', scrub: true } });
-    q('.proc-step').forEach((s) => {
-      gsap.from(s, { opacity: 0.25, x: 30, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: s, start: 'top 75%', toggleClass: 'on' } });
+    const cards = q('.proc-card');
+    // as each phase slides up over the last, the one beneath settles back into the deck
+    cards.forEach((card, i) => {
+      const next = cards[i + 1];
+      if (!next) return;
+      const st = { trigger: next, start: 'top 85%', end: 'top 30%', scrub: true };
+      gsap.to(card.querySelector('.proc-card-in'), { scale: 0.94, ease: 'none', scrollTrigger: st });
+      gsap.to(card.querySelector('.proc-shade'), { opacity: 1, ease: 'none', scrollTrigger: { ...st } });
+    });
+    cards.forEach((card) => {
+      gsap.from(card.querySelector('.proc-num'), {
+        yPercent: 40, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: card, start: 'top 80%' },
+      });
     });
   }, { scope: root });
 
+  const n = process.steps.length;
   return (
     <section className="section process" id="process" ref={root} aria-labelledby="process-title">
       <div className="wrap proc">
@@ -208,19 +219,29 @@ export function Process() {
           <SecHead n="07" label={process.label} lines={process.heading} size="d-s" id="process-title">
             <p className="lede" style={{ marginTop: 26 }}>Clear phases, agreed checkpoints and your approval before anything goes live. You’ll always know what we need from you, and what happens next.</p>
           </SecHead>
-        </div>
-        <div className="proc-list">
-          <div className="proc-line" aria-hidden="true"><i /></div>
-          <ol style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            {process.steps.map(([t, d], i) => (
-              <li className="proc-step" key={t}>
-                <span className="n mono">Phase 0{i + 1}</span>
-                <h3>{t}</h3>
-                <p>{d}</p>
-              </li>
-            ))}
+          <ol className="proc-index mono" aria-hidden="true">
+            {process.steps.map(([t], i) => <li key={t}><span>{String(i + 1).padStart(2, '0')}</span>{t}</li>)}
           </ol>
         </div>
+        <ol className="proc-deck">
+          {process.steps.map(([t, d], i) => (
+            <li className={`proc-card tone-${i + 1}`} key={t} style={{ '--i': i }}>
+              <div className="proc-card-in">
+                <span className="proc-shade" aria-hidden="true" />
+                <span className="proc-num serif" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <div className="proc-body">
+                  <span className="proc-phase mono">Phase {String(i + 1).padStart(2, '0')}</span>
+                  <h3>{t}</h3>
+                  <p>{d}</p>
+                </div>
+                <div className="proc-foot mono" aria-hidden="true">
+                  <span>{String(i + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}</span>
+                  <span className="proc-bar"><i style={{ width: `${((i + 1) / n) * 100}%` }} /></span>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );
@@ -236,7 +257,9 @@ function FaqItem({ q, a, i, open, onToggle }) {
     <div className={`faq-item ${open ? 'open' : ''}`}>
       <h3 style={{ margin: 0 }}>
         <button className="faq-q" aria-expanded={open} aria-controls={`faq-${i}`} id={`faq-btn-${i}`} onClick={onToggle}>
-          {q}<span className="ic" aria-hidden="true" />
+          <span className="faq-n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <span className="faq-text">{q}</span>
+          <span className="ic" aria-hidden="true" />
         </button>
       </h3>
       <div id={`faq-${i}`} role="region" aria-labelledby={`faq-btn-${i}`} className="faq-a" ref={body} inert={!open}>
@@ -251,8 +274,16 @@ export function Faq() {
   return (
     <section className="section" id="faqs" aria-labelledby="faq-title">
       <div className="wrap faq-grid">
-        <SecHead n="08" label={faqs.label} lines={faqs.heading} size="d-s" id="faq-title" />
-        <div>
+        <div className="faq-side">
+          <SecHead n="08" label={faqs.label} lines={faqs.heading} size="d-s" id="faq-title" />
+          <div className="faq-ask">
+            <p className="serif">Still have a question?</p>
+            <p>Ask us anything about your salon’s website, booking journey or CRM — we’ll answer it in your complimentary review.</p>
+            <a href="#review" className="btn solid" onClick={(e) => goTo(e, 'review', cta.primary, 'faq')}>Request a review<span className="arrow" aria-hidden="true">→</span></a>
+            <a className="faq-mail link-u" href={`mailto:${site.email}`}>{site.email}</a>
+          </div>
+        </div>
+        <div className="faq-list">
           {faqs.items.map(([q, a], i) => (
             <FaqItem key={q} q={q} a={a} i={i} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
           ))}

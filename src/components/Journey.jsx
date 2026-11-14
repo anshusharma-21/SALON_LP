@@ -2,7 +2,8 @@ import { useRef } from 'react';
 import { gsap, useGSAP, reducedMotion } from '../lib/motion.js';
 import { img } from '../lib/asset.js';
 import { journey } from '../content.js';
-import { Lines, SecLabel, ScissorIcon } from './common.jsx';
+import { Lines } from './common.jsx';
+import { Shears2D } from './Loader.jsx';
 
 export default function Journey() {
   const root = useRef();
@@ -15,8 +16,8 @@ export default function Journey() {
     mm.add('(min-width: 901px)', () => {
       const track = q('.journey-track')[0];
       const dist = () => track.scrollWidth - window.innerWidth;
-      const snipA = q('.cutline .sc-a')[0];
-      const snipB = q('.cutline .sc-b')[0];
+      const snipA = q('.cutline .sh-a')[0];
+      const snipB = q('.cutline .sh-b')[0];
 
       const tl = gsap.timeline({
         defaults: { ease: 'none' },
@@ -26,8 +27,8 @@ export default function Journey() {
           onUpdate: (st) => {
             const p = st.progress;
             const ang = Math.abs(Math.sin(p * 46)) * 18;
-            gsap.set(snipA, { rotate: -ang });
-            gsap.set(snipB, { rotate: ang });
+            gsap.set(snipA, { rotate: ang });
+            gsap.set(snipB, { rotate: -ang });
           },
         },
       });
@@ -49,19 +50,16 @@ export default function Journey() {
   return (
     <section className="journey" ref={root} aria-labelledby="journey-title" id="journey">
       <div className="journey-pin">
+        <div className="journey-glow" aria-hidden="true" />
         <div className="journey-head">
-          <div>
-            <SecLabel n="02">{journey.label}</SecLabel>
-            <h2 className="serif d-m" id="journey-title" style={{ margin: 0 }}><Lines lines={journey.heading} /></h2>
-          </div>
-          <p className="mono" style={{ color: 'rgba(245,239,232,.55)', margin: 0 }}>Five moments that matter</p>
+          <h2 className="serif d-m" id="journey-title" style={{ margin: 0 }}><Lines lines={journey.heading} /></h2>
+          <p className="journey-aside mono"><span />Moments</p>
         </div>
         <ol className="journey-track" style={{ listStyle: 'none', margin: 0 }}>
-          {journey.steps.map((s, i) => (
+          {journey.steps.map((s) => (
             <li className="j-panel" key={s.title}>
               <div className="j-img">
-                <img src={img(s.img)} alt="" loading="lazy" width="460" height="460" />
-                <span className="j-num" aria-hidden="true">0{i + 1}</span>
+                <img src={img(s.img)} alt="" loading="lazy" decoding="async" width="460" height="460" />
               </div>
               <div className="j-body">
                 <h3>{s.title}</h3>
@@ -73,7 +71,7 @@ export default function Journey() {
         <div className="cutline" aria-hidden="true">
           <div className="dash" />
           <div className="done" />
-          <div className="snip"><ScissorIcon /></div>
+          <div className="snip"><Shears2D /></div>
           <div className="labels mono"><span>Discover</span><span>Stay connected</span></div>
         </div>
       </div>

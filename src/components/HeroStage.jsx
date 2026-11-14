@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger, useGSAP, reducedMotion } from '../lib/motion.js';
 import { shears } from '../three/shearsState.js';
-import { img } from '../lib/asset.js';
+import { asset, img } from '../lib/asset.js';
 import { hero, problems, value, cta } from '../content.js';
 import { Lines, SecLabel } from './common.jsx';
 import { goTo } from './Chrome.jsx';
@@ -10,6 +10,7 @@ const FLOW_MQ = '(max-width: 900px), (prefers-reduced-motion: reduce)';
 
 export default function HeroStage({ loaded }) {
   const root = useRef();
+  const video = useRef();
   const [flow, setFlow] = useState(() => window.matchMedia(FLOW_MQ).matches);
 
   useEffect(() => {
@@ -19,27 +20,49 @@ export default function HeroStage({ loaded }) {
     return () => mq.removeEventListener('change', on);
   }, []);
 
+  // ---- the salon film: muted, inline, looping; never for reduced motion or data-saver --------
+  useEffect(() => {
+    const v = video.current;
+    if (!v) return;
+    const still = reducedMotion() || navigator.connection?.saveData;
+    if (still) { v.removeAttribute('autoplay'); v.preload = 'none'; v.pause(); return; }
+    v.muted = true;
+    const play = () => v.play().catch(() => {});
+    play();
+    // pause whenever the film is off screen (saves battery and keeps scrolling smooth)
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? play() : v.pause()), { threshold: 0.01 });
+    io.observe(v);
+    const onVis = () => (document.hidden ? v.pause() : play());
+    document.addEventListener('visibilitychange', onVis);
+    return () => { io.disconnect(); document.removeEventListener('visibilitychange', onVis); };
+  }, []);
+
   // ---- entrance (after the loader opens) -------------------------------------------------
   useGSAP(() => {
     const q = gsap.utils.selector(root);
     const a = shears.a;
     if (!loaded) {
       if (!reducedMotion()) gsap.set(q('.hero-title .line > span'), { yPercent: 110 });
-      Object.assign(a, { x: 0.3, y: -0.36, size: 0.56, rx: 0.25, ry: -0.35, rz: -0.42, open: 0.32, snip: 0, o: 1, in: 0, spin: -3.3 });
+      Object.assign(a, window.matchMedia(FLOW_MQ).matches
+        ? { x: 0.3, y: -0.36, size: 0.56, rx: 0.25, ry: -0.35, rz: -0.42, open: 0.32, snip: 0, o: 1, in: 0, spin: -3.3 }
+        : { x: 0, y: -0.12, size: 0.5, rx: 0.2, ry: -0.35, rz: -0.3, open: 0.3, snip: 0, o: 1, in: 0, spin: -3.3 });
       return;
     }
     if (reducedMotion()) return;
     const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
     // "walking in": the whole scene rushes forward out of a soft blur as the loader doors open
-    tl.fromTo(q('.stage-zoom'), { scale: 1.32, filter: 'blur(14px)', transformOrigin: '50% 50%' },
-      { scale: 1, filter: 'blur(0px)', duration: 2.1, ease: 'expo.out', clearProps: 'filter,transform' }, 0);
+    tl.fromTo(q('.stage-zoom'), { scale: 1.22, transformOrigin: '50% 50%' },
+      { scale: 1, duration: 2.2, ease: 'expo.out', clearProps: 'transform' }, 0)
+      .fromTo(q('.stage-dark'), { opacity: 0.9 }, { opacity: 0, duration: 1.6, ease: 'power2.out' }, 0);
     tl.to(q('.hero-title .line > span'), { yPercent: 0, duration: 1.5, stagger: 0.09 }, 0.15)
       .from(q('.hero-copy .lede, .hero-actions, .hero-micro'), { opacity: 0, y: 30, duration: 1.2, stagger: 0.08 }, 0.5)
-      .from(q('.hero-arch'), { clipPath: 'inset(100% 0% 0% 0% round 999px 999px 0 0)', duration: 1.8, ease: 'expo.inOut' }, 0)
-      .from(q('.hero-arch img'), { scale: 1.4, duration: 2.4 }, 0)
+      .from(q('.hero-video'), { scale: 1.15, duration: 3.2, ease: 'power3.out' }, 0)
       .from(q('.scroll-cue'), { opacity: 0, duration: 1.2 }, 1.2)
-      .to(a, { in: 1, duration: 1.4, ease: 'power2.out' }, 0.4)
-      .to(a, { spin: 0, duration: 2.4, ease: 'power3.out' }, 0.4);
+    // phones: the shears ride with the film arch from the start (desktop brings them in on scroll)
+    if (window.matchMedia(FLOW_MQ).matches) {
+      tl.to(a, { in: 1, duration: 1.4, ease: 'power2.out' }, 0.4)
+        .to(a, { spin: 0, duration: 2.4, ease: 'power3.out' }, 0.4);
+    }
   }, { scope: root, dependencies: [loaded] });
 
   // ---- scroll choreography ----------------------------------------------------------------
@@ -52,7 +75,7 @@ export default function HeroStage({ loaded }) {
 
     if (flow) {
       // Mobile: the shears ride along with the arch photo, then drift away.
-      const arch = q('.hero-arch')[0];
+      const arch = q('.hero-media')[0];
       Object.assign(a, { size: 0.3, rx: 0.2, rz: -0.5 });
       const follow = () => {
         const r = arch.getBoundingClientRect();
@@ -88,10 +111,14 @@ export default function HeroStage({ loaded }) {
     // 1 — hero gives way
     tl.to(q('.hero-copy'), { y: -140, opacity: 0, duration: 0.7, ease: 'power2.in' }, 0)
       .to(q('.scroll-cue'), { opacity: 0, duration: 0.3 }, 0)
-      .to(q('.hero-arch'), { clipPath: 'inset(30% 18% 30% 18% round 999px 999px 999px 999px)', scale: 0.7, opacity: 0, duration: 0.9, ease: 'power2.inOut' }, 0.05)
-      .to(q('.hero-arch img'), { scale: 1.3, duration: 0.9 }, 0.05);
+      .fromTo(q('.hero-media'), { clipPath: 'inset(0% 0% 0% 0% round 0px 0px 0px 0px)' },
+        { clipPath: 'inset(16% 36% 16% 36% round 999px 999px 999px 999px)', duration: 0.85, ease: 'power2.inOut' }, 0.02)
+      .to(q('.hero-media'), { opacity: 0, duration: 0.35, ease: 'power1.in' }, 0.62)
+      .to(q('.hero-video'), { scale: 1.25, duration: 0.9 }, 0.02);
 
     // 2 — the shears take centre stage
+    tl.fromTo(a, { in: 0 }, { in: 1, duration: 0.35, ease: 'power2.out' }, 0.3)
+      .fromTo(a, { spin: -3.3 }, { spin: 0, duration: 0.85, ease: 'power3.out' }, 0.3);
     tl.to(a, { x: 0, y: -0.22, size: 0.6, rx: 0.08, ry: 0, rz: 0, open: 0.42, duration: 1, ease: 'power2.inOut' }, 0)
       .to(a, { ry: Math.PI * 2, duration: 1.5, ease: 'power1.inOut' }, 0.95)
       .to(a, { snip: 1, duration: 0.3 }, 1.1)
@@ -126,8 +153,14 @@ export default function HeroStage({ loaded }) {
       <div className="stage-bg" aria-hidden="true" />
       <div className="stage-dark" aria-hidden="true" />
 
-      <div className="hero-arch">
-        <img src={img('hero-waves.webp')} alt="Salon client with long, glossy blow-dried waves" width="1200" height="1500" fetchPriority="high" />
+      <div className="hero-media">
+        <video
+          ref={video} className="hero-video" muted loop playsInline autoPlay preload="auto"
+          poster={asset('video/salon-loop-poster.webp')} aria-hidden="true" tabIndex={-1}
+        >
+          <source src={asset('video/salon-loop.mp4')} type="video/mp4" />
+        </video>
+        <div className="hero-shade" aria-hidden="true" />
       </div>
 
 
