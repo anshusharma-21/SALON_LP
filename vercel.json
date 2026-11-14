@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/uksalons", "destination": "/index.html" },
+    { "source": "/uksalons/", "destination": "/index.html" },
+    { "source": "/uksalons/api/:path*", "destination": "/api/:path*" },
+    { "source": "/uksalons/:path*", "destination": "/:path*" }
+  ]
+}

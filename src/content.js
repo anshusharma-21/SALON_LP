@@ -11,7 +11,8 @@ export const site = {
   termsUrl: '/terms',
   // PRD 10.4: optional, never invented. Set to an approved Calendly/booking URL to enable.
   bookingUrl: null,
-  formEndpoint: '/api/lead',
+  // Relative to the deploy base, so it reaches this project's function at /uksalons/api/lead.
+  formEndpoint: `${import.meta.env.BASE_URL}api/lead`,
   formVersion: 'uksalons-v1',
 };
 

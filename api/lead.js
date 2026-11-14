@@ -96,7 +96,8 @@ export default async function handler(req, res) {
   // Honeypot: bots fill the hidden "company" field. Pretend success, store nothing.
   if (body.company) return res.status(200).json({ ok: true, ref: 'UKS-0' });
 
-  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
+  // Behind the Cloudflare Worker every request arrives from Cloudflare, so use the visitor IP it passes on.
+  const ip = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
   if (limited(ip)) return res.status(429).json({ ok: false, error: 'rate', message: 'Too many requests. Please try again shortly.' });
 
   const { lead, errors } = validate(body);

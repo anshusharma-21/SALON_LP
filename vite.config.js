@@ -6,7 +6,7 @@ import leadHandler from './api/lead.js';
 const devApi = () => ({
   name: 'dev-api',
   configureServer(server) {
-    server.middlewares.use('/api/lead', (req, res) => {
+    server.middlewares.use('/uksalons/api/lead', (req, res) => {
       let raw = '';
       req.on('data', (c) => (raw += c));
       req.on('end', async () => {
@@ -20,7 +20,9 @@ const devApi = () => ({
 });
 
 export default defineConfig({
-  base: './',
+  // Served at automationlabs.online/uksalons (Cloudflare Worker -> this Vercel project).
+  // vercel.json maps /uksalons/* back to the root, so the plain vercel.app URL keeps working too.
+  base: '/uksalons/',
   plugins: [react(), devApi()],
   build: {
     chunkSizeWarningLimit: 1200,
