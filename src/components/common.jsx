@@ -30,7 +30,6 @@ export function SecLabel({ n, children, style }) {
   return (
     <div className="sec-label mono" style={style}>
       {n && <span>({n})</span>}
-      <span className="dash" />
       <span>{children}</span>
     </div>
   );

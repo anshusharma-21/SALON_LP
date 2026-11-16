@@ -53,7 +53,7 @@ export default function Journey() {
         <div className="journey-glow" aria-hidden="true" />
         <div className="journey-head">
           <h2 className="serif d-m" id="journey-title" style={{ margin: 0 }}><Lines lines={journey.heading} /></h2>
-          <p className="journey-aside mono"><span />Moments</p>
+          <p className="journey-aside mono">(02)<span />{journey.label}</p>
         </div>
         <ol className="journey-track" style={{ listStyle: 'none', margin: 0 }}>
           {journey.steps.map((s) => (

@@ -22,6 +22,8 @@ const schema = z.object({
   phone: z.string().trim().refine((v) => !v || /^[+\d][\d\s()-]{7,}$/.test(v), 'Please enter a valid phone number, or leave it blank.'),
   locations: z.string().min(1, 'Please choose the number of locations.'),
   team: z.string().min(1, 'Please choose your team size.'),
+  budget: z.string().min(1, 'Please choose a budget range.'),
+  launch: z.string().trim().max(60, 'Please keep this short, e.g. March 2027.'),
   improve: z.array(z.string()),
   notes: z.string().max(2000, 'Please keep this under 2,000 characters.'),
   privacy: z.boolean().refine((v) => v, 'Please confirm you have read the privacy notice.'),
@@ -35,7 +37,7 @@ const schema = z.object({
 
 const defaults = {
   name: '', salon: '', noSite: false, website: '', email: '', phone: '', locations: '', team: '',
-  improve: [], notes: '', privacy: false, marketing: false, company: '',
+  budget: '', launch: '', improve: [], notes: '', privacy: false, marketing: false, company: '',
 };
 
 function Err({ id, msg }) {
@@ -71,7 +73,7 @@ function LeadForm() {
       });
       const out = await res.json().catch(() => ({}));
       if (res.ok && out.ok) {
-        track('uksalons_form_submit', { form_version: site.formVersion, service_need: data.improve.join('|'), location_count: data.locations });
+        track('uksalons_form_submit', { form_version: site.formVersion, service_need: data.improve.join('|'), location_count: data.locations, budget: data.budget });
         track('uksalons_form_success', { submission_ref: out.ref });
         setState({ status: 'done', ref: out.ref, error: '' });
         return;
@@ -94,7 +96,7 @@ function LeadForm() {
     return (
       <div className="success" role="status" aria-live="polite" tabIndex={-1} ref={(el) => el?.focus()}>
         <div className="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></div>
-        <h3>Thank you.</h3>
+        <h3>{closing.successTitle}</h3>
         <p>{closing.success}</p>
         <p className="mono" style={{ fontSize: 10 }}>Reference: {state.ref}</p>
         <p>Need to add something? Email <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
@@ -105,8 +107,8 @@ function LeadForm() {
 
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)} onFocus={onStart} aria-describedby="req-note">
-      <h3>Request your complimentary review</h3>
-      <p className="req-note" id="req-note">Fields marked * are required. It takes about two minutes.</p>
+      <h3>{closing.formTitle}</h3>
+      <p className="req-note" id="req-note">{closing.formSub}</p>
 
       {state.status === 'error' && (
         <div className="form-error" role="alert">
@@ -168,8 +170,24 @@ function LeadForm() {
         </div>
       </div>
 
+      <div className="row2">
+        <div className="field">
+          <label htmlFor="f-budget">Budget *</label>
+          <select id="f-budget" {...register('budget')} {...a11y('budget')}>
+            <option value="">Select</option>
+            {F.budget.map((o) => <option key={o}>{o}</option>)}
+          </select>
+          <Err id="e-budget" msg={errors.budget?.message} />
+        </div>
+        <div className="field">
+          <label htmlFor="f-launch">Ideal launch date (optional)</label>
+          <input id="f-launch" placeholder="e.g. March 2027" {...register('launch')} {...a11y('launch')} />
+          <Err id="e-launch" msg={errors.launch?.message} />
+        </div>
+      </div>
+
       <fieldset className="field" style={{ border: 0, padding: 0, margin: '0 0 24px' }}>
-        <legend style={{ marginBottom: 12 }}>What would you like to improve?</legend>
+        <legend style={{ marginBottom: 12 }}>What you’re interested in</legend>
         <div className="chips">
           {F.improve.map((o) => (
             <label className="chip" key={o}><input type="checkbox" value={o} {...register('improve')} /><span>{o}</span></label>
@@ -201,6 +219,7 @@ function LeadForm() {
       <button type="submit" className="btn solid" style={{ width: '100%', justifyContent: 'center' }} disabled={isSubmitting}>
         {isSubmitting ? 'Sending…' : cta.final}<span className="arrow" aria-hidden="true">→</span>
       </button>
+      <p className="under-btn">{closing.underButton}</p>
     </form>
   );
 }
@@ -237,7 +256,7 @@ export default function Review() {
         <div className="closing-left">
           <div className="bg" aria-hidden="true"><img src={img('review-salon.webp')} alt="" loading="lazy" /></div>
           <div>
-            <SecLabel n="09">{closing.label}</SecLabel>
+            <SecLabel n="10">{closing.label}</SecLabel>
             <h2 className="serif d-m" id="closing-title" style={{ margin: 0 }}><Lines lines={closing.heading} /></h2>
             <p className="lede">{closing.body}</p>
             <p className="review-note">{closing.reviewNote}</p>

@@ -1,10 +1,34 @@
 import { useRef, useState } from 'react';
 import { gsap, useGSAP, reducedMotion } from '../lib/motion.js';
 import { img } from '../lib/asset.js';
-import { beyond, why, process, faqs, cta, site } from '../content.js';
+import { beyond, why, process, faqs, cta, site, proof, investment } from '../content.js';
 import { SecHead, SecLabel, Lines } from './common.jsx';
 import { goTo } from './Chrome.jsx';
 import { track } from '../lib/track.js';
+
+/* ------------------------------------------------------------------ Proof strip (after Concepts) */
+export function Proof() {
+  const root = useRef();
+  useGSAP(() => {
+    if (reducedMotion()) return;
+    const q = gsap.utils.selector(root);
+    gsap.from(q('.proof-in > *'), {
+      opacity: 0, y: 30, duration: 1.2, stagger: 0.12, ease: 'expo.out',
+      scrollTrigger: { trigger: root.current, start: 'top 80%' },
+    });
+  }, { scope: root });
+  return (
+    <section className="proof" ref={root} aria-label={proof.eyebrow}>
+      <div className="wrap proof-in">
+        <p className="proof-eyebrow mono"><span aria-hidden="true" />{proof.eyebrow}<span aria-hidden="true" /></p>
+        <p className="proof-line serif">{proof.line}</p>
+        <a href="#review" className="link-u" onClick={(e) => goTo(e, 'review', proof.link, 'proof')}>
+          {proof.link} <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+  );
+}
 
 /* ------------------------------------------------------------------ Beyond the website */
 // Illustrative CRM data (fictional salon, fictional clients)
@@ -43,7 +67,7 @@ export function Beyond() {
     q('.glass, .g-toast').forEach((g, i) => {
       gsap.from(g, { opacity: 0, z: -200, duration: 1.4, delay: i * 0.12, ease: 'expo.out', scrollTrigger: { trigger: q('.crm-stage')[0], start: 'top 75%' } });
     });
-    gsap.from(q('.crm-mod'), { opacity: 0, y: 40, duration: 1, stagger: 0.07, ease: 'expo.out', scrollTrigger: { trigger: q('.crm-modules')[0], start: 'top 85%' } });
+    gsap.from(q('.crm-line li'), { opacity: 0, y: 24, duration: 1, stagger: 0.06, ease: 'expo.out', scrollTrigger: { trigger: q('.crm-line')[0], start: 'top 88%' } });
 
     const stage = q('.crm-stage')[0];
     const ry = gsap.quickTo(q('.crm-tilt')[0], 'rotateY', { duration: 1, ease: 'power3' });
@@ -140,11 +164,9 @@ export function Beyond() {
             <p className="crm-note mono">{beyond.note}</p>
           </div>
         </div>
-        <div className="crm-modules">
-          {beyond.modules.map(([t, d]) => (
-            <div className="crm-mod" key={t}><h3 className="crm-h">{t}</h3><p>{d}</p></div>
-          ))}
-        </div>
+        <ul className="crm-line" aria-label="Salon CRM modules">
+          {beyond.modules.map((m) => <li key={m} className="serif">{m}</li>)}
+        </ul>
       </div>
     </section>
   );
@@ -217,14 +239,15 @@ export function Process() {
       <div className="wrap proc">
         <div className="proc-sticky">
           <SecHead n="07" label={process.label} lines={process.heading} size="d-s" id="process-title">
-            <p className="lede" style={{ marginTop: 26 }}>Clear phases, agreed checkpoints and your approval before anything goes live. You’ll always know what we need from you, and what happens next.</p>
+            <p className="lede" style={{ marginTop: 26 }}>{process.intro}</p>
           </SecHead>
           <ol className="proc-index mono" aria-hidden="true">
             {process.steps.map(([t], i) => <li key={t}><span>{String(i + 1).padStart(2, '0')}</span>{t}</li>)}
           </ol>
+          <p className="proc-small">{process.small}</p>
         </div>
         <ol className="proc-deck">
-          {process.steps.map(([t, d], i) => (
+          {process.steps.map(([t, when, d], i) => (
             <li className={`proc-card tone-${i + 1}`} key={t} style={{ '--i': i }}>
               <div className="proc-card-in">
                 <span className="proc-shade" aria-hidden="true" />
@@ -232,7 +255,7 @@ export function Process() {
                 <div className="proc-body">
                   <span className="proc-phase mono">Phase {String(i + 1).padStart(2, '0')}</span>
                   <h3>{t}</h3>
-                  <p>{d}</p>
+                  <p><b className="proc-when">{when}</b> {d}</p>
                 </div>
                 <div className="proc-foot mono" aria-hidden="true">
                   <span>{String(i + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}</span>
@@ -242,6 +265,52 @@ export function Process() {
             </li>
           ))}
         </ol>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ Investment (new) */
+export function Investment() {
+  const root = useRef();
+  useGSAP(() => {
+    if (reducedMotion()) return;
+    const q = gsap.utils.selector(root);
+    gsap.from(q('.tier'), {
+      opacity: 0, y: 60, duration: 1.3, stagger: 0.12, ease: 'expo.out',
+      scrollTrigger: { trigger: q('.tiers')[0], start: 'top 82%' },
+    });
+    gsap.from(q('.inv-foot'), { opacity: 0, y: 30, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: q('.inv-foot')[0], start: 'top 92%' } });
+  }, { scope: root });
+
+  return (
+    <section className="section investment" id="investment" ref={root} aria-labelledby="investment-title">
+      <div className="wrap">
+        <SecHead n="08" label={investment.label} lines={investment.heading} size="d-s" id="investment-title">
+          <p className="lede" style={{ marginTop: 26 }}>{investment.intro}</p>
+        </SecHead>
+        <div className="tiers">
+          {investment.tiers.map((t, i) => (
+            <article className={`tier ${i === 1 ? 'tier-dark' : ''}`} key={t.name} aria-labelledby={`tier-${i}`}>
+              <header className="tier-head">
+                <span className="tier-n mono">{String(i + 1).padStart(2, '0')}</span>
+                <h3 className="serif" id={`tier-${i}`}>{t.name}</h3>
+                <p className="tier-price serif">{t.price}</p>
+              </header>
+              <dl className="tier-rows">
+                <div><dt className="mono">For</dt><dd>{t.for}</dd></div>
+                <div><dt className="mono">Includes</dt><dd>{t.includes}</dd></div>
+                <div><dt className="mono">Live in</dt><dd>{t.live}</dd></div>
+              </dl>
+            </article>
+          ))}
+        </div>
+        <div className="inv-foot">
+          <p>{investment.under}</p>
+          <a href="#review" className="btn solid" onClick={(e) => goTo(e, 'review', cta.primary, 'investment')}>
+            {cta.primary}<span className="arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
       </div>
     </section>
   );
@@ -275,11 +344,11 @@ export function Faq() {
     <section className="section" id="faqs" aria-labelledby="faq-title">
       <div className="wrap faq-grid">
         <div className="faq-side">
-          <SecHead n="08" label={faqs.label} lines={faqs.heading} size="d-s" id="faq-title" />
+          <SecHead n="09" label={faqs.label} lines={faqs.heading} size="d-s" id="faq-title" />
           <div className="faq-ask">
-            <p className="serif">Still have a question?</p>
-            <p>Ask us anything about your salon’s website, booking journey or CRM — we’ll answer it in your complimentary review.</p>
-            <a href="#review" className="btn solid" onClick={(e) => goTo(e, 'review', cta.primary, 'faq')}>Request a review<span className="arrow" aria-hidden="true">→</span></a>
+            <p className="serif"><em>{faqs.side.title}</em></p>
+            <p>{faqs.side.body}</p>
+            <a href="#review" className="btn solid" onClick={(e) => goTo(e, 'review', cta.primaryShort, 'faq')}>{cta.primaryShort}<span className="arrow" aria-hidden="true">→</span></a>
             <a className="faq-mail link-u" href={`mailto:${site.email}`}>{site.email}</a>
           </div>
         </div>

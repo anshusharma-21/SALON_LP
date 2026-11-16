@@ -10,6 +10,7 @@
 
 const LOCATIONS = ['1', '2–3', '4–10', '11+', 'Planning expansion'];
 const TEAM = ['1–4', '5–10', '11–25', '26–50', '50+'];
+const BUDGET = ['£1,000–£3,500', '£3,500–£6,000', '£6,000–£10,000', 'Not sure yet'];
 const IMPROVE = [
   'Website redesign', 'New website', 'Online booking', 'Multi-location website',
   'Gift vouchers / memberships', 'CRM / customer management', 'Automation', 'Other',
@@ -55,6 +56,8 @@ export function validate(body) {
     phone: normUkPhone(str(body.phone, 40)),
     locations: str(body.locations, 40),
     team: str(body.team, 40),
+    budget: str(body.budget, 40),
+    launch: str(body.launch, 60),
     improve: Array.isArray(body.improve) ? body.improve.filter((x) => IMPROVE.includes(x)) : [],
     notes: str(body.notes, 2000),
     privacy: body.privacy === true,
@@ -70,6 +73,7 @@ export function validate(body) {
   if (!isEmail(lead.email)) errors.email = 'Please enter a valid work email.';
   if (!LOCATIONS.includes(lead.locations)) errors.locations = 'Please choose the number of locations.';
   if (!TEAM.includes(lead.team)) errors.team = 'Please choose your team size.';
+  if (!BUDGET.includes(lead.budget)) errors.budget = 'Please choose a budget range.';
   if (!lead.privacy) errors.privacy = 'Please confirm you have read the privacy notice.';
   return { lead, errors };
 }
@@ -137,6 +141,7 @@ export default async function handler(req, res) {
     `Website: ${lead.noSite ? 'Planning a new website' : lead.website}`,
     `Email: ${lead.email}`, `Phone: ${lead.phone || '—'}`,
     `Locations: ${lead.locations}`, `Team size: ${lead.team}`,
+    `Budget: ${lead.budget}`, `Ideal launch date: ${lead.launch || '—'}`,
     `Wants to improve: ${lead.improve.join(', ') || '—'}`, '', `Notes: ${lead.notes || '—'}`, '',
     `Marketing opt-in: ${lead.marketing ? 'Yes' : 'No'} · Privacy notice: ${PRIVACY_VERSION}`,
     `Source: ${record.attribution.utm.utm_source || '—'} / ${record.attribution.utm.utm_campaign || '—'}`,
@@ -158,7 +163,7 @@ export default async function handler(req, res) {
     sendEmail({
       to: lead.email,
       subject: 'We’ve received your website review request',
-      text: `Hello ${lead.name},\n\nThank you — we’ve received your request for ${lead.salon}. We’ll review the details you shared and be in touch.\n\nReference: ${ref}\n\nAI Automation Labs`,
+      text: `Hello ${lead.name},\n\nThank you. Your request for ${lead.salon} is with us, and we’ll be in touch within one working day to arrange a short call. Your review follows within two working days.\n\nReference: ${ref}\n\nAI Automation Labs`,
     }).catch((e) => console.error('[lead] ack failed', ref, e.message));
   }
 

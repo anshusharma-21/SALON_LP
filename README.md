@@ -40,7 +40,7 @@ npm run build      # static output in dist/
 
 ## Before launch (PRD checklist)
 
-- [ ] Confirm public email in `src/content.js` (`hello@automationlabs.online` is a placeholder)
+- [ ] Confirm public email in `src/content.js` (now `info@automationlabs.online`)
 - [ ] Confirm lead recipient (`LEAD_TO`) and verify sender domain in Resend
 - [ ] Privacy notice live at `/privacy` (form links to it). Terms at `/terms`.
 - [ ] Add the analytics tag (GA4/Plausible) behind consent. Events already push to `window.dataLayer` only after consent, with no PII.

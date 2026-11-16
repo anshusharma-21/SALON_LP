@@ -55,7 +55,7 @@ export default function HeroStage({ loaded }) {
       { scale: 1, duration: 2.2, ease: 'expo.out', clearProps: 'transform' }, 0)
       .fromTo(q('.stage-dark'), { opacity: 0.9 }, { opacity: 0, duration: 1.6, ease: 'power2.out' }, 0);
     tl.to(q('.hero-title .line > span'), { yPercent: 0, duration: 1.5, stagger: 0.09 }, 0.15)
-      .from(q('.hero-copy .lede, .hero-actions, .hero-micro'), { opacity: 0, y: 30, duration: 1.2, stagger: 0.08 }, 0.5)
+      .from(q('.hero-copy .lede, .hero-actions'), { opacity: 0, y: 30, duration: 1.2, stagger: 0.08 }, 0.5)
       .from(q('.hero-video'), { scale: 1.15, duration: 3.2, ease: 'power3.out' }, 0)
       .from(q('.scroll-cue'), { opacity: 0, duration: 1.2 }, 1.2)
     // phones: the shears ride with the film arch from the start (desktop brings them in on scroll)
@@ -177,7 +177,6 @@ export default function HeroStage({ loaded }) {
             {cta.secondary} <span aria-hidden="true">↓</span>
           </a>
         </div>
-        <p className="hero-micro mono">{hero.micro}</p>
       </div>
 
       <div className="scroll-cue mono" aria-hidden="true"><span>Scroll</span><i /></div>

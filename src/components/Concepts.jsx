@@ -107,13 +107,7 @@ const MOCKS = [
   ),
 ];
 
-const BLURBS = [
-  'Positioning, signature services and a clear path to book.',
-  'Everything a client needs to know before booking a treatment.',
-  'Portrait, specialisms and booking with the right stylist.',
-  'Address, hours and a booking link for every studio.',
-  'Vouchers and memberships, presented as beautifully as the salon.',
-];
+const BLURBS = concepts.blurbs;
 const BASE_W = 640; // mockups are designed at 640 × 500 and scaled to fit
 const BASE_H = 500;
 
@@ -225,9 +219,8 @@ export default function Concepts() {
             <span className="cf-count mono"><b>01</b> / {String(concepts.items.length).padStart(2, '0')}</span>
             <span className="cf-progress"><i /></span>
           </div>
-          <p className="cf-note mono">{concepts.note}</p>
         </div>
-        <div className="cf-stage" data-cursor="Scroll">
+        <div className="cf-stage">
           {MOCKS.map((M, i) => (
             <figure className="cf-card" key={concepts.items[i]} style={{ margin: 0 }}>
               <div className="cf-frame">
@@ -236,7 +229,6 @@ export default function Concepts() {
               </div>
               <figcaption className="cf-meta">
                 <span className="serif">{concepts.items[i]}</span>
-                <span className="concept-tag mono">Illustrative concept</span>
               </figcaption>
             </figure>
           ))}

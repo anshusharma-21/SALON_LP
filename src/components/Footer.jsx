@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { gsap, useGSAP, reducedMotion } from '../lib/motion.js';
 import { getLenis } from '../lib/smooth.js';
-import { nav, site, cta } from '../content.js';
+import { nav, site, cta, footer } from '../content.js';
 import { goTo } from './Chrome.jsx';
 import { ScissorIcon } from './common.jsx';
 
@@ -27,8 +27,7 @@ export default function Footer() {
     gsap.from(q('.f-word-it'), { opacity: 0, y: 24, rotate: -6, duration: 1.4, delay: 0.5, ease: 'expo.out', scrollTrigger: { trigger: q('.f-word')[0], start: 'top 95%' } });
   }, { scope: root });
 
-  const year = new Date().getFullYear();
-  const word = 'Automation Labs';
+  const word = 'AI Automation Labs';
   return (
     <footer className="footer" ref={root}>
       <div className="f-grid">
@@ -40,9 +39,9 @@ export default function Footer() {
               <span className="f-script">for salons</span>
             </span>
           </a>
-          <p>Premium websites for established UK salons and salon groups — with Salon CRM and automation for when you’re ready to connect more.</p>
-          <a href="#review" className="btn light f-cta" onClick={(e) => goTo(e, 'review', cta.primary, 'footer')}>
-            Request a review<span className="arrow" aria-hidden="true">→</span>
+          <p>{footer.tagline}</p>
+          <a href="#review" className="btn light f-cta" onClick={(e) => goTo(e, 'review', cta.primaryShort, 'footer')}>
+            {cta.primaryShort}<span className="arrow" aria-hidden="true">→</span>
           </a>
         </div>
 
@@ -78,7 +77,7 @@ export default function Footer() {
       </div>
 
       <div className="f-base">
-        <span className="mono">© {year} {site.company}</span>
+        <span className="mono">{site.legal}</span>
         <a href="#top" className="f-top" onClick={backToTop}>
           <span className="mono">Back to top</span>
           <span className="f-top-btn" aria-hidden="true">

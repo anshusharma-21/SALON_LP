@@ -3,12 +3,12 @@ import { ScrollTrigger, reducedMotion } from './lib/motion.js';
 import { startSmooth, stopScroll, resumeScroll } from './lib/smooth.js';
 import { getConsent, track, utm, device } from './lib/track.js';
 import Loader from './components/Loader.jsx';
-import { Header, Cursor, CookieBar } from './components/Chrome.jsx';
+import { Header, CookieBar } from './components/Chrome.jsx';
 import HeroStage from './components/HeroStage.jsx';
 import Journey from './components/Journey.jsx';
 import { Build, Lookbook } from './components/Build.jsx';
 import Concepts from './components/Concepts.jsx';
-import { Beyond, Why, Process, Faq } from './components/Sections.jsx';
+import { Proof, Beyond, Why, Process, Investment, Faq } from './components/Sections.jsx';
 import Review from './components/Review.jsx';
 import Footer from './components/Footer.jsx';
 
@@ -49,7 +49,6 @@ export default function App() {
     <>
       <a href="#main" className="skip">Skip to content</a>
       <Loader onDone={() => setLoaded(true)} />
-      <Cursor />
       <div className="grain" aria-hidden="true" />
       <Header />
       {use3D && <Suspense fallback={null}><ShearsCanvas /></Suspense>}
@@ -59,9 +58,11 @@ export default function App() {
         <Build />
         <Lookbook />
         <Concepts />
+        <Proof />
         <Beyond />
         <Why />
         <Process />
+        <Investment />
         <Faq />
         <Review />
       </main>

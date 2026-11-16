@@ -1,9 +1,8 @@
-// Site "chrome": header, mobile menu, custom cursor, cookie consent.
-import { useEffect, useRef, useState } from 'react';
-import { gsap } from '../lib/motion.js';
+// Site "chrome": header, mobile menu, cookie consent.
+import { useEffect, useState } from 'react';
 import { getLenis, scrollToId } from '../lib/smooth.js';
 import { getConsent, setConsent, track, utm, device } from '../lib/track.js';
-import { nav, cta, site } from '../content.js';
+import { nav, cta } from '../content.js';
 
 export function goTo(e, id, label, section) {
   e?.preventDefault();
@@ -65,7 +64,7 @@ export function Header() {
         </nav>
         <div className="header-cta">
           <a href="#review" className="btn solid" onClick={(e) => goTo(e, 'review', cta.primary, 'header')}>
-            <span className="hide-sm">Request a review</span><span className="show-sm">Review</span><span className="arrow" aria-hidden="true">→</span>
+            {cta.header}<span className="arrow" aria-hidden="true">→</span>
           </a>
           <button className="menu-btn" aria-expanded={open} aria-controls="mobile-menu" aria-label={open ? 'Close menu' : 'Open menu'} onClick={() => setOpen((o) => !o)}>
             <i /><i />
@@ -80,35 +79,6 @@ export function Header() {
           {cta.primary}<span className="arrow" aria-hidden="true">→</span>
         </a>
       </div>
-    </>
-  );
-}
-
-export function Cursor() {
-  const dot = useRef();
-  const ring = useRef();
-  const label = useRef();
-  useEffect(() => {
-    if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
-    const xd = gsap.quickTo(dot.current, 'x', { duration: 0.1 });
-    const yd = gsap.quickTo(dot.current, 'y', { duration: 0.1 });
-    const xr = gsap.quickTo(ring.current, 'x', { duration: 0.5, ease: 'power3' });
-    const yr = gsap.quickTo(ring.current, 'y', { duration: 0.5, ease: 'power3' });
-    const move = (e) => {
-      xd(e.clientX); yd(e.clientY); xr(e.clientX); yr(e.clientY);
-      const t = e.target.closest?.('[data-cursor], a, button, label, input, select, textarea');
-      const r = ring.current;
-      if (t?.dataset?.cursor) { r.classList.add('big'); r.classList.remove('hover'); label.current.textContent = t.dataset.cursor; }
-      else if (t) { r.classList.add('hover'); r.classList.remove('big'); }
-      else { r.classList.remove('big', 'hover'); }
-    };
-    window.addEventListener('pointermove', move, { passive: true });
-    return () => window.removeEventListener('pointermove', move);
-  }, []);
-  return (
-    <>
-      <div className="cursor" ref={dot} aria-hidden="true" />
-      <div className="cursor-ring" ref={ring} aria-hidden="true"><span ref={label} /></div>
     </>
   );
 }
